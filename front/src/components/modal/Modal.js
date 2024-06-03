@@ -1,14 +1,28 @@
-import { Button } from "@mui/material"
-import React, { useState } from "react"
-import Input from "../input/Input"
-import { IoClose } from "react-icons/io5"
+import { Button } from "@mui/material";
+import React, { useState } from "react";
+import { IoClose } from "react-icons/io5";
+import { Link, useNavigate } from "react-router-dom";
+import Input from "../input/Input";
 
 function Modal({ title, className }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+
+  const navigate = useNavigate();
 
   const handleOpen = () => {
-    setOpen(!open)
-  }
+    setOpen(!open);
+  };
+
+  const handleLogin = () => {
+    if (email && password) {
+      localStorage.setItem("user", JSON.stringify({ email, password }));
+      navigate("/dashboard");
+    } else {
+      alert("Preencha os campos corretamente");
+    }
+  };
 
   return (
     <div>
@@ -32,34 +46,49 @@ function Modal({ title, className }) {
 
             <hr className="w-full border-b border-purple-300" />
             <div className="w-full px-5">
-              <Input label="Digite seu e-mail" />
-              <Input label="Digite sua senha" />
+              <Input
+                onChange={(e) => setEmail(e.target.value)}
+                label="Digite seu e-mail"
+                value={email}
+                type="email"
+              />
+              <Input
+                onChange={(e) => setPassword(e.target.value)}
+                label="Digite sua senha"
+                type="password"
+                value={password}
+              />
               <Button
                 variant="contained"
                 className="w-full bg-finscorePurple text-white"
+                onClick={handleLogin}
               >
                 Entrar
               </Button>
               <div className="mt-5 flex justify-between">
-                <span className="text-finscorePurple cursor-pointer hover:opacity-80">Registre-se</span>
+                <span className="text-finscorePurple cursor-pointer hover:opacity-80">
+                  Registre-se
+                </span>
                 <span className="text-finscorePurple cursor-pointer hover:opacity-80">
                   Esqueci minha senha
                 </span>
               </div>
             </div>
             <div className="w-full px-5">
-              <Button
-                variant="contained"
-                className="w-full bg-finscorePurple text-white"
-              >
-                Polticas de privacidade
-              </Button>
+              <Link target="_blank" to="/privacy">
+                <Button
+                  variant="contained"
+                  className="w-full bg-finscorePurple text-white"
+                >
+                  Polticas de privacidade
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default Modal
+export default Modal;
