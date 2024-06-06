@@ -18,6 +18,7 @@ function Modal({ title, className }) {
   const handleLogin = () => {
     if (email && password) {
       localStorage.setItem("user", JSON.stringify({ email, password }));
+      localStorage.setItem("isLogged", true);
       navigate("/dashboard");
     } else {
       alert("Preencha os campos corretamente");
@@ -80,7 +81,7 @@ function Modal({ title, className }) {
                   variant="contained"
                   className="w-full bg-finscorePurple text-white"
                 >
-                  Polticas de privacidade
+                  Politicas de privacidade
                 </Button>
               </Link>
             </div>

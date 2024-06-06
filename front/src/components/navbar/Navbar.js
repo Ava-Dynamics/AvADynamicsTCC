@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiChevronLeft } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { IoIosFingerPrint } from "react-icons/io";
 import { RxHamburgerMenu } from "react-icons/rx";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../../index.css";
 import Modal from "../modal/Modal";
 import { NavbarItems } from "./navbar-items";
@@ -13,6 +13,7 @@ function Navbar({ hideMenu = false, menuType = "home", getPage }) {
   const [activeMenu, setActiveMenu] = useState(0);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const menu = NavbarItems[menuType];
   const user = JSON.parse(localStorage.getItem("user"));
   const userName = user?.email.split("@")[0];
@@ -24,8 +25,19 @@ function Navbar({ hideMenu = false, menuType = "home", getPage }) {
 
   const logout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("isLogged");
     navigate("/");
   };
+
+  useEffect(() => {
+    const currentItem = menu.findIndex(
+      (item) => item.url === location.pathname,
+    );
+    if (currentItem !== -1) {
+      setActiveMenu(currentItem);
+      getPage(menu[currentItem].text);
+    }
+  }, [location, menu, getPage]);
 
   return (
     <div className="relative flex justify-between items-center py-10">
@@ -62,7 +74,7 @@ function Navbar({ hideMenu = false, menuType = "home", getPage }) {
                     onClick={() => {
                       if (menuType !== "dashboard") scrollToDiv(item.id);
                       setActiveMenu(index);
-                      getPage(item.text);
+                      navigate(item.url);
                     }}
                   >
                     {item.text}

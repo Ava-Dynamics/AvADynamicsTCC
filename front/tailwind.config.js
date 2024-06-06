@@ -9,6 +9,7 @@ module.exports = {
         finscoreBlue: "#101728",
         finscoreLightBlue: "#564979",
         finscorePurple: "#9340FF",
+        finscoreLink: "#3f377f",
       },
     },
   },
