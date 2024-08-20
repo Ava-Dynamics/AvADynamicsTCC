@@ -1,0 +1,23 @@
+name: score
+services:
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:9.0.2
+    ports:
+      - 3900:3567
+    env_file:
+      - ../.env
+    environment:
+      POSTGRESQL_CONNECTION_URI: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_URL}:${POSTGRES_PORT}/${POSTGRES_DB_SUPER}"
+    networks:
+      - app-score
+    restart: unless-stopped
+    healthcheck:
+      test: >
+        bash -c 'exec 3<>/dev/tcp/127.0.0.1/3567 && echo -e "GET /hello HTTP/1.1\r\nhost: 127.0.0.1:3567\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep "Hello"'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app-score:
+    driver: bridge
