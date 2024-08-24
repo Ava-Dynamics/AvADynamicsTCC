@@ -14,7 +14,7 @@ export class Newspaper {
     });
 
     // Inserindo informações apos iniciar o aplicativo
-    this.getNewInfo();
+    if (process.env.START_NEWSPAPER_CRON == '1') this.getNewInfo();
   }
 
   @Cron('* * 1 * * *', { name: 'getNewInfo' })

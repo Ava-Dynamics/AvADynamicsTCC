@@ -1,0 +1,7 @@
+chmod 400 ScoreAppKey.pem
+ls -l ScoreAppKey.pem 
+ssh -i ScoreAppKey.pem ubuntu@18.231.188.72
+
+
+https://st-dev-79105e80-5ea7-11ef-b156-6bf69a9301f0.aws.supertokens.io
+yLLoj0zdsqG5NMAaTWd61vmvhX

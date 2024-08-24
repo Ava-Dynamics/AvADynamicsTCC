@@ -2,6 +2,8 @@ import { DynamicModule, MiddlewareConsumer, Module } from '@nestjs/common';
 import { AuthModuleConfig, ConfigInjectionToken } from './config.interface';
 import { AuthMiddleware } from './authentication.middleware';
 import { SupertokensService } from './supertokens/supertokens.service';
+import { UserService } from 'src/v1/services/user.service';
+import { PrismaService } from '../database/prisma/prisma.service';
 
 @Module({})
 export class AuthenticationModule {
@@ -25,8 +27,10 @@ export class AuthenticationModule {
           provide: ConfigInjectionToken,
         },
         SupertokensService,
+        UserService,
+        PrismaService,
       ],
-      exports: [],
+      exports: [SupertokensService],
       imports: [],
       module: AuthenticationModule,
     };

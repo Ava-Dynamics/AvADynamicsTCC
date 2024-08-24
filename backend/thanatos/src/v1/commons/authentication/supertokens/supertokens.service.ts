@@ -5,10 +5,14 @@ import EmailPassword from 'supertokens-node/recipe/emailpassword';
 import Dashboard from 'supertokens-node/recipe/dashboard';
 import { ConfigInjectionToken, AuthModuleConfig } from '../config.interface';
 import jwt from 'supertokens-node/lib/build/recipe/jwt';
+import { UserService } from 'src/v1/services/user.service';
 
 @Injectable()
 export class SupertokensService {
-  constructor(@Inject(ConfigInjectionToken) private config: AuthModuleConfig) {
+  constructor(
+    @Inject(ConfigInjectionToken) private config: AuthModuleConfig,
+    private readonly user: UserService,
+  ) {
     supertokens.init({
       framework: 'express',
       appInfo: config.appInfo,
@@ -17,10 +21,30 @@ export class SupertokensService {
         apiKey: config.apiKey,
       },
       recipeList: [
-        EmailPassword.init(),
+        EmailPassword.init({
+          override: {
+            apis: (originalImplementation) => {
+              return {
+                ...originalImplementation,
+                signUpPOST: async function (input) {
+                  if (originalImplementation.signUpPOST === undefined) {
+                    throw Error('Should never come here');
+                  }
+
+                  const response =
+                    await originalImplementation.signUpPOST(input);
+                  if (response.status == 'OK')
+                    await user.fromSupertokens(response);
+
+                  return response;
+                },
+              };
+            },
+          },
+        }),
         jwt.init(),
         Dashboard.init({
-          admins: ['reseflix@hotmail.com'],
+          admins: ['rm88971@fiap.com.br'],
         }),
         Session.init({
           getTokenTransferMethod() {
