@@ -8,6 +8,8 @@ import { NewspaperController } from './controllers/newspaper.controller';
 import { NewspaperService } from './services/newspaper.service';
 import { UserService } from './services/user.service';
 import { UserController } from './controllers/user.controller';
+import { PostsController } from './controllers/posts.controller';
+import { PostsService } from './services/posts.service';
 
 @Module({
   imports: [
@@ -24,7 +26,18 @@ import { UserController } from './controllers/user.controller';
       },
     }),
   ],
-  controllers: [TestController, NewspaperController, UserController],
-  providers: [TestService, Newspaper, NewspaperService, UserService],
+  controllers: [
+    TestController,
+    NewspaperController,
+    UserController,
+    PostsController,
+  ],
+  providers: [
+    TestService,
+    Newspaper,
+    NewspaperService,
+    UserService,
+    PostsService,
+  ],
 })
 export class V1Module {}
