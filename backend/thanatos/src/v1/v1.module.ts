@@ -19,10 +19,10 @@ import { PostsService } from './services/posts.service';
       apiKey: process.env.SUPER_KEY,
       appInfo: {
         appName: 'score',
-        apiDomain: '127.0.0.1:' + process.env.THANATOS_PORT,
+        apiDomain: process.env.REACT_APP_BACKEND,
         apiBasePath: '/auth',
         websiteBasePath: '/auth',
-        websiteDomain: '127.0.0.1:' + process.env.FRONTEND_PORT,
+        websiteDomain: process.env.REACT_APP_URL,
       },
     }),
   ],

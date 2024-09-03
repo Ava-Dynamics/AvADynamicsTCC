@@ -5,8 +5,10 @@ import { IoIosFingerPrint } from "react-icons/io";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../../index.css";
-import Modal from "../modal/Modal";
 import { NavbarItems } from "./navbar-items";
+import { signOut } from "supertokens-auth-react/recipe/session";
+import { redirectToAuth } from "supertokens-auth-react";
+
 
 function Navbar({ hideMenu = false, menuType = "home", getPage }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -23,9 +25,10 @@ function Navbar({ hideMenu = false, menuType = "home", getPage }) {
     element.scrollIntoView({ behavior: "smooth" });
   };
 
-  const logout = () => {
+  const logout = async () => {
     localStorage.removeItem("user");
     localStorage.removeItem("isLogged");
+    await signOut();
     navigate("/");
   };
 
@@ -80,10 +83,13 @@ function Navbar({ hideMenu = false, menuType = "home", getPage }) {
                     {item.text}
                   </span>
                 ) : (
-                  <Modal
+                  <div 
                     className="cursor-pointer hover:text-finscoreLightBlue transition duration-300 ease-in-out md:text-md lg:text-lg"
                     title="LOGIN"
-                  />
+                    onClick={() => {redirectToAuth()}}
+                  >
+                    Login
+                  </div>
                 )}
               </div>
             ))}
