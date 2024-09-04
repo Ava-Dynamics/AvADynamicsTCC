@@ -11,7 +11,6 @@ import Session from "supertokens-auth-react/recipe/session";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const superInfo = {
-  // learn more about this on https://supertokens.com/docs/emailpassword/appinfo
   appName: "score",
   apiDomain: process.env.REACT_APP_BACKEND,
   websiteDomain: process.env.REACT_APP_URL,
@@ -25,8 +24,27 @@ console.log(superInfo);
 SuperTokens.init({
   appInfo: superInfo,
   recipeList: [
-      EmailPassword.init(),
-      Session.init()
+    EmailPassword.init({
+      signInAndUpFeature: {
+          signUpForm: {
+              formFields: [{
+                  id: "name",
+                  label: "Nome completo",
+                  placeholder: "Seu primeiro e último nome",
+              }, {
+                  id: "cpf",
+                  label: "CPF",
+                  placeholder: "000.000.000-00",
+              }, {
+                  id: "job",
+                  label: "Trabalho atual",
+                  placeholder: "Programador/Autonomo",
+                  optional: true
+              }]
+          }
+        }
+    }),
+    Session.init()
   ]
 });
 

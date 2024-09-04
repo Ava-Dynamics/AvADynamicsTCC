@@ -22,6 +22,20 @@ export class SupertokensService {
       },
       recipeList: [
         EmailPassword.init({
+          signUpFeature: {
+            formFields: [
+              {
+                id: 'name',
+              },
+              {
+                id: 'cpf',
+              },
+              {
+                id: 'job',
+                optional: true,
+              },
+            ],
+          },
           override: {
             apis: (originalImplementation) => {
               return {
