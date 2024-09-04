@@ -10,8 +10,12 @@ import UserMedals from "./pages/userMedals";
 import CommunityPage from "./pages/communityPage";
 import { getSuperTokensRoutesForReactRouterDom } from "supertokens-auth-react/ui";
 import * as reactRouterDom from "react-router-dom";
-import { EmailPasswordPreBuiltUI } from 'supertokens-auth-react/recipe/emailpassword/prebuiltui';
-import { SessionAuth, useSessionContext } from "supertokens-auth-react/recipe/session";
+import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpassword/prebuiltui";
+import {
+  SessionAuth,
+  useSessionContext,
+} from "supertokens-auth-react/recipe/session";
+import Signup from "./components/register/register";
 
 function App() {
   const navigate = useNavigate();
@@ -19,7 +23,7 @@ function App() {
   const session = useSessionContext();
 
   useEffect(() => {
-    if (session.doesSessionExist  && path === "/") {
+    if (session.doesSessionExist && path === "/") {
       return navigate("/dashboard");
     }
 
@@ -36,13 +40,51 @@ function App() {
   return (
     <Routes>
       <Route path="/" index element={<Hero />} />
+      <Route path="/register" index element={<Signup />} />
       <Route path="/privacy" element={<Privacy />} />
-      <Route path="/dashboard" element={<SessionAuth><DashboardPage /></SessionAuth>} />
-      <Route path="/courses" element={<SessionAuth><Courses /></SessionAuth>} />
-      <Route path="/score" element={<SessionAuth><Score /></SessionAuth>} />
-      <Route path="/medals" element={<SessionAuth><UserMedals /></SessionAuth>} />
-      <Route path="/community" element={<SessionAuth><CommunityPage /></SessionAuth>} />
-      {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [EmailPasswordPreBuiltUI])}
+      <Route
+        path="/dashboard"
+        element={
+          <SessionAuth>
+            <DashboardPage />
+          </SessionAuth>
+        }
+      />
+      <Route
+        path="/courses"
+        element={
+          <SessionAuth>
+            <Courses />
+          </SessionAuth>
+        }
+      />
+      <Route
+        path="/score"
+        element={
+          <SessionAuth>
+            <Score />
+          </SessionAuth>
+        }
+      />
+      <Route
+        path="/medals"
+        element={
+          <SessionAuth>
+            <UserMedals />
+          </SessionAuth>
+        }
+      />
+      <Route
+        path="/community"
+        element={
+          <SessionAuth>
+            <CommunityPage />
+          </SessionAuth>
+        }
+      />
+      {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [
+        EmailPasswordPreBuiltUI,
+      ])}
     </Routes>
   );
 }

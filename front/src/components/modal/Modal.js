@@ -1,13 +1,14 @@
-import { Button } from "@mui/material";
 import React, { useState } from "react";
+import { Button } from "@mui/material";
 import { IoClose } from "react-icons/io5";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Input from "../input/Input";
+import { SignInAPI } from "supertokens-auth-react/recipe/emailpassword";
 
 function Modal({ title, className }) {
   const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
@@ -15,13 +16,16 @@ function Modal({ title, className }) {
     setOpen(!open);
   };
 
-  const handleLogin = () => {
-    if (email && password) {
-      localStorage.setItem("user", JSON.stringify({ email, password }));
-      localStorage.setItem("isLogged", true);
-      navigate("/dashboard");
-    } else {
-      alert("Preencha os campos corretamente");
+  const handleLogin = async () => {
+    try {
+      const response = await SignInAPI.signIn({ email, password });
+      if (response.status === "OK") {
+        navigate("/dashboard");
+      } else {
+        alert("Login failed: " + response.message);
+      }
+    } catch (error) {
+      alert("An error occurred: " + error.message);
     }
   };
 
