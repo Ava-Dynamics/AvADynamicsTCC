@@ -1,18 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "../components/header/Header";
 
 function Score() {
-  const user = JSON.parse(localStorage.getItem("user")) || { email: "Usuário" };
-  const userName = user.email.split("@")[0];
+  const [userInfo, setUser] = React.useState([]);
+  useEffect(() => {
+    fetch(process.env.REACT_APP_BACKEND + "/users").then((res) => {
+      res.json().then((data) => {
+        setUser(data);    
+      })
+    });
+  }, []);
 
   return (
     <Header>
       <div className="flex w-full justify-between items-center bg-purple-900 text-white py-4 px-8 rounded-md">
-        <h1 className="text-2xl">Olá {userName}!</h1>
+        <h1 className="text-2xl">Olá {userInfo.name ? userInfo.name : 'Usuario'}!</h1>
         <span className="text-xl font-bold">Seu Score foi atualizado!</span>
       </div>
       <div className="mt-8">
-        <div className="text-6xl font-bold text-black">926</div>
+        <div className="text-6xl font-bold text-black">{userInfo.score ? userInfo.score : 0}</div>
         <div className="text-2xl font-bold text-green-700">Excelente!</div>
         <div className="mt-4 w-full bg-gray-200 rounded-full h-8">
           <div

@@ -48,7 +48,7 @@ export class SupertokensService {
                   const response =
                     await originalImplementation.signUpPOST(input);
                   if (response.status == 'OK')
-                    await user.fromSupertokens(response);
+                    await user.fromSupertokens(response, input.formFields);
 
                   return response;
                 },

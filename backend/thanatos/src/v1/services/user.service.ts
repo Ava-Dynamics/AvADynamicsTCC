@@ -13,13 +13,25 @@ export type WhereInputMany =
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async fromSupertokens(data: any) {
+  async fromSupertokens(data: any, formFields: any) {
+    const convertArrayToObject = (arr) => {
+      return arr.reduce((obj, item) => {
+        obj[item.id] = item.value;
+        return obj;
+      }, {});
+    };
+
+    const convertedData = convertArrayToObject(formFields);
+
     return await this.prisma.users.create({
       data: {
         createdAt: new Date(data.user.timeJoined),
         supertokenId: data.user.id,
         email: data.user?.emails[0],
         score: 1000,
+        name: convertedData.name,
+        cpf: convertedData.cpf,
+        job: convertedData.job,
       },
     });
   }
@@ -65,7 +77,17 @@ export class UserService {
     if (where.hasOwnProperty('id')) where['id'] = Number(where['id']);
     return await this.prisma.users.findUnique({
       where,
-      select: { id: true, usersMedalsRef: true },
+      select: { id: true, usersMedalsRef: { include: { medalsRel: true } } },
+    });
+  }
+
+  async getjorneys(where: WhereInput) {
+    if (!(where.hasOwnProperty('supertokenId') || where.hasOwnProperty('id')))
+      throw new HttpException('Faltando supertokenId|id', HttpStatus.FORBIDDEN);
+    if (where.hasOwnProperty('id')) where['id'] = Number(where['id']);
+    return await this.prisma.users.findUnique({
+      where,
+      select: { id: true, jorneyRef: true },
     });
   }
 

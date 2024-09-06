@@ -1,26 +1,22 @@
 import React from "react";
 import JourneyStep from "../jorney-step/JourneyStep";
 
-function Journey() {
-  const steps = [
-    {
-      status: "bloqueado",
-      title: "Cinco dicas para aumentar seu score na Serasa",
-    },
-    { status: "andamento", title: "Nome limpo e score baixo: o que fazer?" },
-    { status: "finalizado", title: "Bancos: Lista negra ou restrição interna" },
-    { status: "finalizado", title: "O que é o Banco Central" },
-  ];
+function Journey({data}) {
+  const stepsId = {
+    1: "bloqueado",
+    2: "andamento",
+    3: "finalizado",
+  }
 
   return (
     <div>
       <h2 className="text-2xl font-bold uppercase mb-4">Minha Jornada</h2>
-      {steps.map((step, index) => (
+      {data.jorneyRef && data.jorneyRef.map((step, index) => (
         <JourneyStep
-          key={index}
-          status={step.status}
-          title={step.title}
-          isLast={index === steps.length - 1}
+          key={step.id}
+          status={stepsId[step.type]}
+          title={step.name}
+          isLast={index === data.jorneyRef.length - 1}
         />
       ))}
     </div>

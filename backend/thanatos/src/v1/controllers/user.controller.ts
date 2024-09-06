@@ -53,6 +53,14 @@ export class UserController {
     });
   }
 
+  @Get('jorney')
+  @UseGuards(new AuthGuard())
+  async getJorney(@Session() session: SessionContainer) {
+    return await this.user.getjorneys({
+      supertokenId: session.getUserId(),
+    });
+  }
+
   @Get('find')
   @UseGuards(new AuthGuard())
   async findUsers(@Query() where: WhereInputMany) {

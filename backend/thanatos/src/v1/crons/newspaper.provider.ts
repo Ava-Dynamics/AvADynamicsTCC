@@ -21,7 +21,13 @@ export class Newspaper {
   async getNewInfo() {
     Logger.log('Buscando novas noticias...', 'Newspaper getNewInfo');
     const req = await this.axios.get('top-headlines', {
-      params: { category: 'business', country: 'br' },
+      // params: { category: 'business', country: 'br' },
+      //&from=2024-09-05&sortBy=publishedAt&q=brasil
+      params: {
+        q: 'brasil',
+        from: new Date().toISOString().split('T')[0],
+        sortBy: 'publishedAt',
+      },
     });
 
     const data: NewspaperRoot = JSON.parse(await req.data);

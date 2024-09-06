@@ -1,56 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/header/Header";
 
-const initialPosts = [
-  {
-    username: "@rodrigosuhai",
-    img: "https://avatars.githubusercontent.com/u/108596751?s=48&v=4",
-    content:
-      "Já criptos é um capítulo à parte. Li recentemente um livro chamado A psicologia financeira, do Morgan Housel, que é muito interessante... Ele fala sobre a história das criptomoedas e como elas são um ativo muito volátil e arriscado, mas que podem ser uma boa opção para diversificar a carteira de investimentos. O que vocês acham? Já investiram em criptos?",
-    date: "1 de abr",
-  },
-  {
-    username: "@brunooalmeid",
-    img: "https://avatars.githubusercontent.com/u/11295366?s=48&v=4",
-    content:
-      "O único critério de tempo de banco, relacionamento de compra, uso do cartão e etc só vai influenciar no AirDrop do nucoin... Mas o que vocês acham sobre criptomoedas? Já investiram? Qual a melhor opção para quem está começando? Qual a melhor corretora? Qual a melhor cripto?",
-    date: "1 de abr",
-  },
-  {
-    username: "@guilhermecheng",
-    img: "https://avatars.githubusercontent.com/u/62719629?v=4",
-    content:
-      "Criptomoedas são um assunto muito interessante. Acho que é uma boa opção para diversificar a carteira de investimentos, mas é preciso ter cuidado. O mercado é muito volátil e é preciso estudar muito antes de investir. O que vocês acham? Já investiram em criptos? Qual a melhor corretora? Qual a melhor cripto? Qual a melhor opção para quem está começando? ",
-    date: "2 de abr",
-  },
-  {
-    username: "@rafaeldias",
-    img: "https://avatars.githubusercontent.com/u/38702780?v=4",
-    content:
-      "Bitcoin é uma criptomoeda que foi criada em 2008 por uma pessoa ou grupo de pessoas desconhecidas. Ela é a primeira moeda digital descentralizada do mundo e é considerada por muitos como a moeda do futuro. O que vocês acham sobre o Bitcoin? Já investiram? Qual a melhor corretora? Qual a melhor cripto? Qual a melhor opção para quem está começando?",
-    date: "5 de abr",
-  },
-];
+
 
 function CommunityPage() {
-  const [posts, setPosts] = useState(initialPosts);
   const [newPostContent, setNewPostContent] = useState("");
-  const user = JSON.parse(localStorage.getItem("user")) || { email: "Usuario" };
-  const userName = user.email.split("@")[0];
+  const [community, setCommunity] = React.useState([]);
+  const [userInfo, setUser] = React.useState([]);
+  const [lastPost, setLastPost] = React.useState([]);
 
-  const addPost = () => {
-    const newPost = {
-      username: `@${userName}`,
-      img: "https://avatars.githubusercontent.com/u/108596710?s=48&v=4",
-      content: newPostContent,
-      date: new Date().toLocaleDateString("pt-BR", {
-        day: "numeric",
-        month: "short",
+  useEffect(() => {
+    fetch(process.env.REACT_APP_BACKEND + "/users").then((res) => {
+      res.json().then((data) => {
+        setUser(data);    
+      })
+    });
+    fetch(process.env.REACT_APP_BACKEND + "/posts").then((res) => {
+      res.json().then((data) => {
+        setCommunity(data);    
+      })
+    });
+  }, [lastPost]);
+
+  function addPost() {
+    console.log('add post',newPostContent);
+    fetch(process.env.REACT_APP_BACKEND + "/posts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: newPostContent,
       }),
-    };
-    setPosts([newPost, ...posts]);
-    setNewPostContent("");
-  };
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setLastPost({ lastPost: new Date() });
+      });
+  }
 
   return (
     <Header>
@@ -89,19 +76,19 @@ function CommunityPage() {
         </div>
       </div>
       <div className="space-y-10">
-        {posts.map((post, index) => (
+        {community && community.map((post, index) => (
           <div key={index} className="bg-white p-4 rounded-md shadow-md">
             <div className="flex items-center mb-2">
               <div className="rounded-full w-10 h-10 flex items-center justify-center mr-4">
                 <img
-                  src={post.img}
+                  src={post.usersRel.imageProfile}
                   alt="User"
                   className="w-10 h-10 rounded-full"
                 />
               </div>
               <div className="flex justify-between w-full">
-                <div className="font-bold text-black">{post.username}</div>
-                <div className="text-gray-500 text-sm">{post.date}</div>
+                <div className="font-bold text-black">{post.usersRel.name}</div>
+                <div className="text-gray-500 text-sm">{new Date(post.publishedAt).toLocaleDateString()}</div>
               </div>
             </div>
             <p className="text-zinc-500 font-light">{post.content}</p>

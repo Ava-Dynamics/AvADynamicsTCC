@@ -30,6 +30,9 @@ export class PostsService {
           },
         },
       },
+      skip: 0,
+      take: 5,
+      orderBy: { publishedAt: 'desc' },
     });
     return posts;
   }

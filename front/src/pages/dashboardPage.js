@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Community from "../components/community/Community";
 import DashboardContent from "../components/dashboard/DashboardContent";
 import Header from "../components/header/Header";
@@ -7,62 +7,71 @@ import Medals from "../components/medal/Medals";
 import News from "../components/news/News";
 
 function DashboardPage() {
+  const [newspapers, setNewspaper] = React.useState([]);
+  const [medals, setMedal] = React.useState([]);
+  const [community, setCommunity] = React.useState([]);
+  const [jorneys, setJorneys] = React.useState([]);
+
+  useEffect(() => {
+    fetch(process.env.REACT_APP_BACKEND + "/newspapers").then((res) => {
+      res.json().then((data) => {
+        setNewspaper(data);    
+      })
+    });
+    fetch(process.env.REACT_APP_BACKEND + "/posts").then((res) => {
+      res.json().then((data) => {
+        setCommunity(data);    
+      })
+    });
+    fetch(process.env.REACT_APP_BACKEND + "/users/Medals").then((res) => {
+      res.json().then((data) => {
+        setMedal(data);    
+      })
+    });
+    fetch(process.env.REACT_APP_BACKEND + "/users/jorney").then((res) => {
+      res.json().then((data) => {
+        setJorneys(data);    
+      })
+    });
+  }, []);
+
+
   return (
     <Header>
       <DashboardContent
         firstTitle="Minha Jornada"
-        firstContent={<Journey />}
+        firstContent={<Journey data={jorneys}/>}
         secondTitle="ÚLTIMAS MEDALHAS"
-        secondContent={<Medals />}
+        secondContent={<Medals data={medals} />}
       />
       <DashboardContent
         firstTitle="Ultimas Notícias"
-        firstContent={
+        firstContent={ newspapers && newspapers.length > 0 &&
           <>
-            <News
-              pageName="Poder360"
-              title="Fazenda divulga parceria com o Banco Central para aprimorar a supervisão do sistema financeiro"
-              content="O Ministério da Economia divulgou nesta quinta-feira (23.set.2021) que a Secretaria de Política Econômica (SPE) e o Banco Central (BC) firmaram um acordo de cooperação técnica para aprimorar a supervisão do sistema financeiro."
-              date="23/09/2021"
-              image="https://live.staticflickr.com/65535/52832410214_fbd6092c18_c.jpg"
-            />
-            <News
-              pageName="Poder360"
-              title="Fazenda divulga parceria com o Banco Central para aprimorar a supervisão do sistema financeiro"
-              content="O Ministério da Economia divulgou nesta quinta-feira (23.set.2021) que a Secretaria de Política Econômica (SPE) e o Banco Central (BC) firmaram um acordo de cooperação técnica para aprimorar a supervisão do sistema financeiro."
-              date="23/09/2021"
-              image="https://live.staticflickr.com/65535/52832410214_fbd6092c18_c.jpg"
-            />
-            <News
-              pageName="Poder360"
-              title="Fazenda divulga parceria com o Banco Central para aprimorar a supervisão do sistema financeiro"
-              content="O Ministério da Economia divulgou nesta quinta-feira (23.set.2021) que a Secretaria de Política Econômica (SPE) e o Banco Central (BC) firmaram um acordo de cooperação técnica para aprimorar a supervisão do sistema financeiro."
-              date="23/09/2021"
-              image="https://live.staticflickr.com/65535/52832410214_fbd6092c18_c.jpg"
-            />
+            {newspapers.map((newspaper) => (
+              <News
+                pageName={JSON.parse(newspaper.source).name}
+                title={newspaper.title}
+                content={newspaper.content}
+                date={new Date(newspaper.publishedAt).toLocaleDateString("pt-BR")}
+                image={newspaper.urlToImage}
+                link={newspaper.url}
+              />
+            ))}
           </>
         }
         secondTitle="Comunidade"
-        secondContent={
+        secondContent={ community && community.length > 0 &&
           <>
-            <Community
-              username="@rodrigosantos"
-              time="3h"
-              content="Aprendi sozinho a investir, assistindo bastante videos no youtube e lendo bastante livros. Recomendo o livro 'Pai Rico, Pai Pobre'. Vale a pena!"
-              image="https://avatars.githubusercontent.com/u/62719629?v=4"
-            />
-            <Community
-              username="@gabrielrodrigues"
-              time="1h"
-              content="Estou começando a investir agora, alguém tem dicas de por onde começar?"
-              image="https://avatars.githubusercontent.com/u/38702780?v=4"
-            />
-            <Community
-              username="@fernandosilva"
-              time="3h"
-              content="Investir em ações é uma ótima opção para quem quer ter uma renda extra. Recomendo começar com ações da Petrobras e Vale. São ações que sempre estão em alta!"
-              image="https://avatars.githubusercontent.com/u/108596751?s=48&v=4"
-            />
+            {community.map((community) => (
+              <Community
+                key={community.id}
+                username={community.usersRel.name}
+                time={new Date(community.publishedAt).toLocaleDateString("pt-BR")}
+                content={community.content}
+                image={community.usersRel.imageProfile}
+              />
+            ))}
           </>
         }
       />
