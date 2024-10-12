@@ -7,6 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import SuperTokens, { SuperTokensWrapper } from "supertokens-auth-react";
 import EmailPassword from "supertokens-auth-react/recipe/emailpassword";
+import ThirdParty, { Google } from "supertokens-auth-react/recipe/thirdparty";
 import Session from "supertokens-auth-react/recipe/session";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -14,16 +15,18 @@ const superInfo = {
   appName: "score",
   apiDomain: process.env.REACT_APP_BACKEND,
   websiteDomain: process.env.REACT_APP_URL,
-  apiBasePath: "/auth",
+  apiBasePath: "/api/auth",
   websiteBasePath: "/auth",
 };
-
-console.log(superInfo); 
-
 
 SuperTokens.init({
   appInfo: superInfo,
   recipeList: [
+    ThirdParty.init({
+      signInAndUpFeature: {
+        providers: [Google.init()]
+      }
+    }),
     EmailPassword.init({
       signInAndUpFeature: {
           signUpForm: {

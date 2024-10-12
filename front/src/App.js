@@ -3,13 +3,14 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import Hero from "./components/hero/Hero";
 import "./index.css";
 import Courses from "./pages/courses";
-import DashboardPage from "./pages/dashboardPage";
+import Dashboard from "./pages/dashboard";
 import Privacy from "./pages/privacy";
 import Score from "./pages/score";
 import UserMedals from "./pages/userMedals";
-import CommunityPage from "./pages/communityPage";
+import Community from "./pages/community";
 import { getSuperTokensRoutesForReactRouterDom } from "supertokens-auth-react/ui";
 import * as reactRouterDom from "react-router-dom";
+import { ThirdPartyPreBuiltUI } from "supertokens-auth-react/recipe/thirdparty/prebuiltui";
 import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpassword/prebuiltui";
 import {
   SessionAuth,
@@ -46,7 +47,7 @@ function App() {
         path="/dashboard"
         element={
           <SessionAuth>
-            <DashboardPage />
+            <Dashboard />
           </SessionAuth>
         }
       />
@@ -78,12 +79,12 @@ function App() {
         path="/community"
         element={
           <SessionAuth>
-            <CommunityPage />
+            <Community />
           </SessionAuth>
         }
       />
       {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [
-        EmailPasswordPreBuiltUI,
+        ThirdPartyPreBuiltUI, EmailPasswordPreBuiltUI
       ])}
     </Routes>
   );

@@ -10,6 +10,8 @@ import { UserService } from './services/user.service';
 import { UserController } from './controllers/user.controller';
 import { PostsController } from './controllers/posts.controller';
 import { PostsService } from './services/posts.service';
+import { CoursesController } from './controllers/courses.controller';
+import { CoursesService } from './services/courses.service';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { PostsService } from './services/posts.service';
       appInfo: {
         appName: 'score',
         apiDomain: process.env.REACT_APP_BACKEND,
-        apiBasePath: '/auth',
+        apiBasePath: '/api/auth',
         websiteBasePath: '/auth',
         websiteDomain: process.env.REACT_APP_URL,
       },
@@ -31,6 +33,7 @@ import { PostsService } from './services/posts.service';
     NewspaperController,
     UserController,
     PostsController,
+    CoursesController,
   ],
   providers: [
     TestService,
@@ -38,6 +41,7 @@ import { PostsService } from './services/posts.service';
     NewspaperService,
     UserService,
     PostsService,
+    CoursesService,
   ],
 })
 export class V1Module {}

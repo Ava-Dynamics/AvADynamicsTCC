@@ -6,9 +6,9 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../../index.css";
 import { NavbarItems } from "./navbar-items";
+import NavbarProfile from "./navbar-profile";
 import { signOut } from "supertokens-auth-react/recipe/session";
 import { redirectToAuth } from "supertokens-auth-react";
-
 
 function Navbar({ hideMenu = false, menuType = "home", getPage }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -22,7 +22,11 @@ function Navbar({ hideMenu = false, menuType = "home", getPage }) {
 
   const scrollToDiv = (id) => {
     const element = document.getElementById(id);
-    element.scrollIntoView({ behavior: "smooth" });
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    } else {
+      console.warn(`Elemento com ID '${id}' não encontrado.`);
+    }
   };
 
   const logout = async () => {
@@ -33,9 +37,7 @@ function Navbar({ hideMenu = false, menuType = "home", getPage }) {
   };
 
   useEffect(() => {
-    const currentItem = menu.findIndex(
-      (item) => item.url === location.pathname,
-    );
+    const currentItem = menu.findIndex((item) => item.url === location.pathname);
     if (currentItem !== -1) {
       setActiveMenu(currentItem);
       getPage(menu[currentItem].text);
@@ -43,12 +45,13 @@ function Navbar({ hideMenu = false, menuType = "home", getPage }) {
   }, [location, menu, getPage]);
 
   return (
-    <div className="relative flex justify-between items-center py-10">
-      <div className="flex gap-5 items-center">
-        <IoIosFingerPrint className="text-zinc-500 md:text-4xl lg:text-4xl" />
+    <div className="relative flex justify-between items-center py-4 md:py-10 px-4 md:px-10">
+      {/* Logo and Title */}
+      <div className="flex gap-4 items-center">
+        <IoIosFingerPrint className="text-zinc-500 text-3xl md:text-4xl" />
         <Link to="/">
           <span
-            className={`md:text-2xl lg:text-3xl text-xl ${
+            className={`text-xl md:text-2xl lg:text-3xl ${
               menuType === "dashboard" ? "text-finscoreLightBlue" : ""
             }`}
           >
@@ -56,24 +59,24 @@ function Navbar({ hideMenu = false, menuType = "home", getPage }) {
           </span>
         </Link>
       </div>
+
+      {/* Desktop Menu */}
       {!hideMenu ? (
         <>
-          <div className="md:flex gap-10 items-center hidden">
+          <div className="hidden md:flex gap-8 lg:gap-10 items-center">
             {menu.map((item, index) => (
               <div key={index}>
                 {item.type === "link" ? (
                   <span
-                    className={`${
+                    className={`cursor-pointer transition duration-300 ease-in-out ${
                       menuType === "dashboard"
                         ? "text-finscoreLightBlue hover:opacity-70"
+                        : "hover:text-finscoreLightBlue"
+                    } ${
+                      activeMenu === index && menuType === "dashboard"
+                        ? "text-stone-950 hover:opacity-70"
                         : ""
-                    }
-                     ${
-                       activeMenu === index && menuType === "dashboard"
-                         ? "text-stone-950 hover:opacity-70"
-                         : ""
-                     }
-                    cursor-pointer hover:text-finscoreLightBlue transition duration-300 ease-in-out md:text-sm lg:text-lg`}
+                    } text-sm md:text-md lg:text-lg`}
                     onClick={() => {
                       if (menuType !== "dashboard") scrollToDiv(item.id);
                       setActiveMenu(index);
@@ -83,10 +86,12 @@ function Navbar({ hideMenu = false, menuType = "home", getPage }) {
                     {item.text}
                   </span>
                 ) : (
-                  <div 
+                  <div
                     className="cursor-pointer hover:text-finscoreLightBlue transition duration-300 ease-in-out md:text-md lg:text-lg"
                     title="LOGIN"
-                    onClick={() => {redirectToAuth()}}
+                    onClick={() => {
+                      redirectToAuth();
+                    }}
                   >
                     Login
                   </div>
@@ -94,46 +99,57 @@ function Navbar({ hideMenu = false, menuType = "home", getPage }) {
               </div>
             ))}
           </div>
+
+          {/* User Profile in Dashboard */}
           {menuType === "dashboard" && (
-            <div
-              onClick={logout}
-              className="cursor-pointer flex items-center gap-2"
-            >
-              <CgProfile className="text-4xl text-finscoreLightBlue cursor-pointer" />
+            <div className="hidden md:flex cursor-pointer items-center gap-2">
+              <NavbarProfile logout={logout} />
               <span className="uppercase hover:text-black text-finscoreLightBlue">
                 {userName}
               </span>
             </div>
           )}
+
+          {/* Mobile Menu Button */}
           <div className="md:hidden">
             <RxHamburgerMenu
               onClick={() => setMenuOpen(!menuOpen)}
               className="cursor-pointer"
               size="2em"
+              color="black"
             />
           </div>
-          <div className={`md:hidden mobile-menu ${menuOpen ? "open" : ""}`}>
+
+          {/* Mobile Menu */}
+          <div
+            className={`fixed top-0 left-0 h-full w-full bg-gray-500 z-10 transition-transform duration-300 ease-in-out md:hidden ${
+              menuOpen ? "transform translate-x-0" : "transform -translate-x-full"
+            }`}
+          >
             <div
-              className="absolute top-10 left-4 cursor-pointer"
+              className="absolute top-10 left-1 cursor-pointer"
               onClick={() => setMenuOpen(false)}
             >
               <BiChevronLeft size="3em" />
             </div>
-            <div className="flex flex-col gap-14 text-2xl">
+            <div className="flex flex-col gap-8 text-xl mt-40 px-4">
               {menu.map((item, index) => (
-                <span key={index} onClick={() => scrollToDiv(item.id)}>
+                <span
+                  key={index}
+                  className="cursor-pointer hover:text-finscoreLightBlue"
+                  onClick={() => {
+                    if (menuType !== "dashboard") scrollToDiv(item.id);
+                    setMenuOpen(false);
+                    setActiveMenu(index);
+                    navigate(item.url);
+                  }}
+                >
                   {item.text}
                 </span>
               ))}
               {menuType === "dashboard" && (
-                <div
-                  onClick={logout}
-                  className=" cursor-pointer flex items-center gap-2"
-                >
-                  <CgProfile
-                    onClick={logout}
-                    className="text-3xl cursor-pointer"
-                  />
+                <div className="cursor-pointer flex items-center gap-2">
+                  <NavbarProfile logout={logout} />
                   <span>{userName}</span>
                 </div>
               )}

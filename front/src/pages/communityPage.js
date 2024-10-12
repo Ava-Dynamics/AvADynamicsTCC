@@ -6,15 +6,9 @@ import Header from "../components/header/Header";
 function CommunityPage() {
   const [newPostContent, setNewPostContent] = useState("");
   const [community, setCommunity] = React.useState([]);
-  const [userInfo, setUser] = React.useState([]);
   const [lastPost, setLastPost] = React.useState([]);
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_BACKEND + "/users").then((res) => {
-      res.json().then((data) => {
-        setUser(data);    
-      })
-    });
     fetch(process.env.REACT_APP_BACKEND + "/posts").then((res) => {
       res.json().then((data) => {
         setCommunity(data);    

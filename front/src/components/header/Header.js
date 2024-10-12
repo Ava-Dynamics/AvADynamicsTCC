@@ -12,22 +12,28 @@ function Header({ children }) {
 
   return (
     <div className="antialiased min-h-screen flex flex-col">
-      <div className="flex-1 px-7 md:px-10 xl:px-28 2xl:px-72 bg-white">
+      {/* Main content wrapper */}
+      <div className="flex-1 px-4 md:px-10 xl:px-28 2xl:px-72 bg-white">
         <Navbar menuType="dashboard" getPage={getCurrentPage} />
         <div className="min-h-14 bg-finscoreLightBlue flex">
-          <span className="text-white text-3xl pt-[10px] pl-14 uppercase">
+          <span className="text-white text-2xl md:text-3xl pt-[10px] pl-4 md:pl-14 uppercase">
             {pageName}
           </span>
         </div>
-        <div className="mt-12 mb-20">{children}</div>
+        <div className="mt-8 md:mt-12 mb-16 md:mb-20">{children}</div>
       </div>
-      <footer className="bg-finscoreLightBlue text-white py-8 px-2">
+
+      {/* Footer */}
+      <footer className="bg-finscoreLightBlue text-white py-6 md:py-8 px-4">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center gap-5">
-            <IoIosFingerPrint className="text-5xl" />
-            <span className="md:text-3xl lg:text-4xl text-2xl">FINSCORE</span>
+          {/* Logo and Title */}
+          <div className="flex items-center gap-3 md:gap-5 mb-4 md:mb-0">
+            <IoIosFingerPrint className="text-4xl md:text-5xl" />
+            <span className="text-2xl md:text-3xl lg:text-4xl">FINSCORE</span>
           </div>
-          <div className="flex gap-10 mt-4 md:mt-0">
+
+          {/* Links */}
+          <div className="flex flex-col md:flex-row gap-4 md:gap-10 text-center md:text-left">
             <a href="#sobre" className="hover:underline">
               SOBRE
             </a>
@@ -41,14 +47,20 @@ function Header({ children }) {
               SUGIRA UMA FUNCIONALIDADE
             </a>
           </div>
-          <div className="flex items-center gap-5 mt-4 md:mt-0">
-            <span className="mr-2">Acompanhe-nos:</span>
-            <LiaInstagram className="cursor-pointer text-3xl hover:text-gray-300" />
-            <LiaFacebook className="cursor-pointer text-3xl hover:text-gray-300" />
-            <LiaYoutube className="cursor-pointer text-3xl hover:text-gray-300" />
+
+          {/* Social media icons */}
+          <div className="flex flex-col items-center md:flex-row gap-4 md:gap-5 mt-4 md:mt-0">
+            <span className="text-sm md:text-base">Acompanhe-nos:</span>
+            <div className="flex gap-4">
+              <LiaInstagram className="cursor-pointer text-2xl md:text-3xl hover:text-gray-300" />
+              <LiaFacebook className="cursor-pointer text-2xl md:text-3xl hover:text-gray-300" />
+              <LiaYoutube className="cursor-pointer text-2xl md:text-3xl hover:text-gray-300" />
+            </div>
           </div>
         </div>
-        <div className="text-center mt-10">
+
+        {/* Copyright notice */}
+        <div className="text-center mt-6 md:mt-10">
           <span>© 2024 - FinScore. All rights reserved</span>
         </div>
       </footer>

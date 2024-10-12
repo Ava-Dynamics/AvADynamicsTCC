@@ -5,12 +5,12 @@ function Medals({data}) {
   return (
     <div>
       <h2 className="text-2xl font-bold uppercase mb-4">Últimas Medalhas</h2>
-      {data.usersMedalsRef && data.usersMedalsRef.length > 0 && data.usersMedalsRef.map((medal) => (
+      {data && data.length > 0 && data.map((medal) => (
         <Medal
           key={medal.id}
-          title={medal.medalsRel.name}
-          description={medal.medalsRel.description}
-          image={medal.medalsRel.image}
+          title={medal.name}
+          description={medal.description}
+          image={medal.image}
         />
       ))}
     </div>

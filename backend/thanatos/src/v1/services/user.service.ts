@@ -3,7 +3,7 @@ import { PrismaService } from '../commons/database/prisma/prisma.service';
 
 export type WhereInput =
   | { supertokenId: string; id?: never } // supertokenId é obrigatório, id não deve estar presente
-  | { id: number; supertokenId?: never }; // id é obrigatório, supertokenId não deve estar presente
+  | { id: string; supertokenId?: never }; // id é obrigatório, supertokenId não deve estar presente
 
 export type WhereInputMany =
   | { email: string; name?: never }
@@ -23,7 +23,7 @@ export class UserService {
 
     const convertedData = convertArrayToObject(formFields);
 
-    return await this.prisma.users.create({
+    return await this.prisma.user.create({
       data: {
         createdAt: new Date(data.user.timeJoined),
         supertokenId: data.user.id,
@@ -40,62 +40,86 @@ export class UserService {
     if (!(where.hasOwnProperty('supertokenId') || where.hasOwnProperty('id')))
       throw new HttpException('Faltando supertokenId|id', HttpStatus.FORBIDDEN);
 
-    if (where.hasOwnProperty('id')) where['id'] = Number(where['id']);
-
-    return await this.prisma.users.findFirst({
+    return await this.prisma.user.findFirst({
       where: where,
     });
   }
 
   async getAllUsers() {
-    return await this.prisma.users.findMany();
+    return await this.prisma.user.findMany();
+  }
+
+  async getScore(where: WhereInput) {
+    if (!(where.hasOwnProperty('supertokenId') || where.hasOwnProperty('id')))
+      throw new HttpException('Faltando supertokenId|id', HttpStatus.FORBIDDEN);
+    const user = await this.prisma.user.findUnique({ where });
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    return user.score;
   }
 
   async getFollowing(where: WhereInput) {
     if (!(where.hasOwnProperty('supertokenId') || where.hasOwnProperty('id')))
       throw new HttpException('Faltando supertokenId|id', HttpStatus.FORBIDDEN);
-    if (where.hasOwnProperty('id')) where['id'] = Number(where['id']);
-    const user = await this.prisma.users.findUnique({
+    const user = await this.prisma.user.findUnique({
       where,
+      include: { following: true },
     });
 
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    return await this.prisma.following.findMany({
-      where: { usersId: user.id },
-      select: {
-        id: true,
-        usersRel: {
-          select: { id: true, name: true, imageProfile: true, score: true },
-        },
-      },
-    });
+    return user.following;
   }
 
   async getMedals(where: WhereInput) {
     if (!(where.hasOwnProperty('supertokenId') || where.hasOwnProperty('id')))
       throw new HttpException('Faltando supertokenId|id', HttpStatus.FORBIDDEN);
-    if (where.hasOwnProperty('id')) where['id'] = Number(where['id']);
-    return await this.prisma.users.findUnique({
+    const user = await this.prisma.user.findUnique({
       where,
-      select: { id: true, usersMedalsRef: { include: { medalsRel: true } } },
+      include: { medals: true },
+    });
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    return user.medals;
+  }
+
+  async receiveMedal(where: WhereInput, name: string) {
+    if (!(where.hasOwnProperty('supertokenId') || where.hasOwnProperty('id')))
+      throw new HttpException('Faltando supertokenId|id', HttpStatus.FORBIDDEN);
+    const user = await this.prisma.user.findUnique({
+      where,
+      include: { medals: true },
+    });
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    const medal = await this.prisma.medal.findFirst({
+      where: { name },
+    });
+    if (!medal)
+      throw new HttpException('Medal not found', HttpStatus.NOT_FOUND);
+    if (user.medals.includes(medal)) return medal;
+    return this.prisma.user.update({
+      where,
+      data: {
+        medals: {
+          connect: { id: medal.id },
+        },
+      },
     });
   }
 
-  async getjorneys(where: WhereInput) {
+  async getJourney(where: WhereInput) {
     if (!(where.hasOwnProperty('supertokenId') || where.hasOwnProperty('id')))
       throw new HttpException('Faltando supertokenId|id', HttpStatus.FORBIDDEN);
-    if (where.hasOwnProperty('id')) where['id'] = Number(where['id']);
-    return await this.prisma.users.findUnique({
+    const user = await this.prisma.user.findUnique({
       where,
-      select: { id: true, jorneyRef: true },
+      include: { journey: true },
     });
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    return user.journey;
   }
 
   async findUsers(where: WhereInputMany) {
     if (!(where.hasOwnProperty('name') || where.hasOwnProperty('email')))
       throw new HttpException('Faltando name|email', HttpStatus.FORBIDDEN);
 
-    return await this.prisma.users.findMany({
+    return await this.prisma.user.findMany({
       where: {
         name: { contains: where.name },
         email: { contains: where.email },
@@ -107,10 +131,8 @@ export class UserService {
     if (!(where.hasOwnProperty('supertokenId') || where.hasOwnProperty('id')))
       throw new HttpException('Faltando supertokenId|id', HttpStatus.FORBIDDEN);
 
-    if (where.hasOwnProperty('id')) where['id'] = Number(where['id']);
-
     Logger.log(data);
-    return await this.prisma.users.update({
+    return await this.prisma.user.update({
       data: data,
       where: where,
     });
@@ -119,30 +141,26 @@ export class UserService {
   async followUser(id: string, where: WhereInput) {
     if (!(where.hasOwnProperty('supertokenId') || where.hasOwnProperty('id')))
       throw new HttpException('Faltando supertokenId|id', HttpStatus.FORBIDDEN);
-    if (where.hasOwnProperty('id')) where['id'] = Number(where['id']);
-    const user = await this.prisma.users.findFirst({
+    const userId = where.id || where.supertokenId;
+    await this.prisma.user.update({
       where: {
-        supertokenId: id,
+        supertokenId: userId,
+      },
+      data: {
+        following: {
+          connect: { id },
+        },
       },
     });
-    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    const follow = await this.prisma.users.findFirst({
-      where,
+    return await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        followers: {
+          connect: { supertokenId: userId },
+        },
+      },
     });
-    if (!follow)
-      throw new HttpException('User to follow not found', HttpStatus.NOT_FOUND);
-    const result = await this.prisma.following.findFirst({
-      where: { usersId: user.id, follow: follow.id },
-    });
-    if (user.id == follow.id)
-      throw new HttpException(
-        'You can not follow yourself',
-        HttpStatus.BAD_REQUEST,
-      );
-    if (!result)
-      return await this.prisma.following.create({
-        data: { usersId: user.id, follow: follow.id },
-      });
-    return result;
   }
 }

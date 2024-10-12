@@ -14,7 +14,7 @@ export class userDtoUpdate {
 }
 
 export class userDtoSingle extends userDtoUpdate {
-  id: number;
+  id: string;
   score: number;
   supertokenId: string;
 

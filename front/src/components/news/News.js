@@ -1,8 +1,8 @@
 import React from "react";
 
-function News({ pageName, title, content, date, image, link }) {
+function News({ pageName, title, content, date, image, link, onClick }) {
   return (
-    <a className="flex mt-10" href={link ? link : '#'}>
+    <a className="flex mt-10 mb-10" href={link ? link : '#'} target="_blank" rel="noreferrer" onClick={onClick}>
       <div className="text-zinc-500 font-light gap-2 flex flex-col max-w-lg">
         <span className="text-sm">{pageName}</span>
         <span className="text-lg text-finscoreLink font-medium">{title}</span>

@@ -5,24 +5,21 @@ import { PrismaService } from '../commons/database/prisma/prisma.service';
 export class PostsService {
   constructor(private readonly prisma: PrismaService) {}
   async getPosts(supertokensId: string) {
-    const user = await this.prisma.users.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: {
         supertokenId: supertokensId,
       },
-      select: { id: true },
-    });
-    const following = await this.prisma.following.findMany({
-      where: { usersId: user.id },
+      include: { following: true },
     });
 
-    if (following.length == 0) return [];
-    const posts = await this.prisma.posts.findMany({
-      where: { usersId: { in: [...following.map((f) => f.follow), user.id] } },
+    if (user.following.length == 0) return [];
+    const posts = await this.prisma.post.findMany({
+      where: { userId: { in: [...user.following.map((u) => u.id), user.id] } },
       select: {
         id: true,
         content: true,
         publishedAt: true,
-        usersRel: {
+        userRel: {
           select: {
             id: true,
             name: true,
@@ -38,15 +35,15 @@ export class PostsService {
   }
 
   async createPost(supertokensId: string, content: string) {
-    const user = await this.prisma.users.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: {
         supertokenId: supertokensId,
       },
       select: { id: true },
     });
-    return this.prisma.posts.create({
+    return this.prisma.post.create({
       data: {
-        usersId: user.id,
+        userId: user.id,
         content: content,
         publishedAt: new Date(),
       },

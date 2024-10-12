@@ -8,7 +8,10 @@ export class NewspaperController {
 
   @Get()
   @UseGuards(new AuthGuard())
-  getNewspapers(@Query() query: { page: number; quantity: number }) {
-    return this.newspaperService.getNewspapers(query?.page, query?.quantity);
+  async getNewspapers(@Query() query: { page: number; quantity: number }) {
+    return await this.newspaperService.getNewspapers(
+      query?.page,
+      query?.quantity,
+    );
   }
 }

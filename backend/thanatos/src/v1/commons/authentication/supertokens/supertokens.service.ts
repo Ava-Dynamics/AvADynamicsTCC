@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import supertokens from 'supertokens-node';
 import Session from 'supertokens-node/recipe/session';
+import ThirdParty from 'supertokens-node/recipe/thirdparty';
 import EmailPassword from 'supertokens-node/recipe/emailpassword';
 import Dashboard from 'supertokens-node/recipe/dashboard';
 import { ConfigInjectionToken, AuthModuleConfig } from '../config.interface';
@@ -21,6 +22,23 @@ export class SupertokensService {
         apiKey: config.apiKey,
       },
       recipeList: [
+        ThirdParty.init({
+          signInAndUpFeature: {
+            providers: [
+              {
+                config: {
+                  thirdPartyId: 'google',
+                  clients: [
+                    {
+                      clientId: process.env.GOOGLE_CLIENT_ID,
+                      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        }),
         EmailPassword.init({
           signUpFeature: {
             formFields: [

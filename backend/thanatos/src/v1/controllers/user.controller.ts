@@ -45,6 +45,22 @@ export class UserController {
     });
   }
 
+  @Post('profile')
+  @UseGuards(new AuthGuard())
+  async updateProfile(@Body() data: any, @Session() session: SessionContainer) {
+    return await this.user.updateUser(data, {
+      supertokenId: session.getUserId(),
+    });
+  }
+
+  @Get('score')
+  @UseGuards(new AuthGuard())
+  async getScore(@Session() session: SessionContainer) {
+    return await this.user.getScore({
+      supertokenId: session.getUserId(),
+    });
+  }
+
   @Get('medals')
   @UseGuards(new AuthGuard())
   async getMedals(@Session() session: SessionContainer) {
@@ -53,10 +69,19 @@ export class UserController {
     });
   }
 
-  @Get('jorney')
+  @Post('medals')
   @UseGuards(new AuthGuard())
-  async getJorney(@Session() session: SessionContainer) {
-    return await this.user.getjorneys({
+  async receiveMedal(@Session() session: SessionContainer, @Body() data: any) {
+    return await this.user.receiveMedal(
+      { supertokenId: session.getUserId() },
+      data.name,
+    );
+  }
+
+  @Get('journey')
+  @UseGuards(new AuthGuard())
+  async getJourney(@Session() session: SessionContainer) {
+    return await this.user.getJourney({
       supertokenId: session.getUserId(),
     });
   }
@@ -82,11 +107,11 @@ export class UserController {
     });
   }
 
-  @Get('follow')
+  @Post('follow')
   @UseGuards(new AuthGuard())
   async followUser(
     @Session() session: SessionContainer,
-    @Query() where: WhereInput,
+    @Body() where: WhereInput,
   ) {
     return await this.user.followUser(session.getUserId(), where);
   }

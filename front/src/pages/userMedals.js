@@ -1,18 +1,22 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { BiLock, BiMedal, BiTrophy } from "react-icons/bi";
 import { CiCoins1 } from "react-icons/ci";
 import { FaHandHoldingUsd } from "react-icons/fa";
 import Header from "../components/header/Header";
+import { userService } from "../services/api/users";
 
 function UserMedals() {
-  const [medals, setMedals] = React.useState([]);
+  const [medals, setMedals] = useState([]);
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_BACKEND + "/users/Medals").then((res) => {
-      res.json().then((data) => {
-        setMedals(data);    
-      })
-    });
+    const getMedals = async () => {
+      const res = await userService.getMedals();
+      if (res && res.status === 200) {
+        setMedals(res.data);
+      }
+    }
+    
+    getMedals();
   },[])
 
   return (
@@ -21,17 +25,17 @@ function UserMedals() {
         Medalhas do Usuário
       </h1>
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-y-10">
-        {medals.usersMedalsRef && medals.usersMedalsRef.map((medal, index) => (
+        {medals && medals.map((medal, index) => (
           <div key={index} className="flex flex-col items-center">
-            <img src={medal.medalsRel.image} alt={'medal'} className="w-14 h-14 rounded-full mr-4" />
+            <img src={medal.image} alt={'medal'} className="w-14 h-14 rounded-full mr-4" />
             <span className="text-center text-sm font-bold text-finscoreLightBlue">
-              {medal.medalsRel.name}
+              {medal.name}
             </span>
           </div>
         ))}
-        {[...Array(20 - (medals.usersMedalsRef ? medals.usersMedalsRef.length : 0))].map((_, index) => (
+        {[...Array(20 - (medals ? medals.length : 0))].map((_, index) => (
           <div
-            key={index + (medals.usersMedalsRef ? medals.usersMedalsRef.length : 0)}
+            key={index + (medals ? medals.length : 0)}
             className="flex flex-col items-center gap-3 opacity-50"
           >
             <BiLock className="w-16 h-16 mb-2 text-gray-500" />
